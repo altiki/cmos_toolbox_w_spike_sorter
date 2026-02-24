@@ -7,7 +7,6 @@ import sys
 import json
 import glob
 sys.path.append('/home/kvulic/Vulic/cmos_toolbox_w_spike_sorter/')
-#from src.utils.logger_functions import console
 from src.cmos_plotter.Plotter_Helper_KV import *
 from src.utils.metadata_functions import load_metadata_as_dataframe
 import logging
@@ -15,8 +14,8 @@ from src.utils.logger_functions import console
 import pickle
 logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
 
-#MAIN_PATH = f'/itet-stor/kvulic/neuronies/single_neurons/1_Subprojects/Neurons_As_DNNs/3_Processed_Data/March2025_heart/'
-MAIN_PATH = '/itet-stor/kvulic/neuronies/single_neurons/1_Subprojects/Neurons_As_DNNs/3_Processed_Data/Pickle_files_1851/'
+
+MAIN_PATH = '...'
 
 PAIRINGS_PATH = os.path.join(MAIN_PATH, f'biTE/')
 OUTPUT_PATH = os.path.join(MAIN_PATH,f'Results')
