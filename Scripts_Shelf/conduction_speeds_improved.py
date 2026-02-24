@@ -20,15 +20,14 @@ import pickle
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import logging
-# Silence just the matplotlib.font_manager logger
 logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
 
 
 
-MAIN_PATH = '/itet-stor/kvulic/neuronies/single_neurons/1_Subprojects/Neurons_As_DNNs/3_Processed_Data/Very_old_chips/'
+MAIN_PATH = '...'
 
-#RECORDINGS_PATH = os.path.join(MAIN_PATH,f'Raw_Traces')
-RECORDINGS_PATH = '/itet-stor/kvulic/neuronies/single_neurons/4_Varia/Very_old_chips_recording/'
+
+RECORDINGS_PATH = '...'
 SORTER_PATH = os.path.join(MAIN_PATH, f'Sorters/')
 CONDUCTION_SPEEDS_PATH = os.path.join(MAIN_PATH, f'Results/')
 
@@ -44,17 +43,14 @@ if not os.path.exists(FIGURE_PATH):
 metadata = load_metadata_as_dataframe(file_path=RECORDINGS_PATH)
 
 
-# Initialize results_combined
 results_combined = []
-
-# Check if Conduction_speeds_all.pkl already exists
 pkl_path = os.path.join(CONDUCTION_SPEEDS_PATH, 'Conduction_speeds_all.pkl')
+
 if os.path.exists(pkl_path):
     print('Loading existing conduction speeds data...')
     with open(pkl_path, 'rb') as f:
         results_combined = pickle.load(f)
     
-    # Extract filenames that are already processed
     processed_filenames = set()
     for result in results_combined:
         if 'filename' in result:
@@ -63,10 +59,8 @@ if os.path.exists(pkl_path):
     print(f"Found {len(processed_filenames)} previously processed recordings")
     print(f"Total results in existing file: {len(results_combined)}")
 
-# Process remaining recordings not in the existing data
 new_results_count = 0
 for idx, filename in enumerate(metadata.Filename):
-    # Skip if this recording is already in the combined results
     if os.path.exists(pkl_path) and filename in processed_filenames:
         print(f'Skipping {filename} - already in combined results')
         continue
@@ -85,21 +79,15 @@ for idx, filename in enumerate(metadata.Filename):
         recording = se.MaxwellRecordingExtractor(os.path.join(RECORDINGS_PATH, f'{filename}'))
         template_path = os.path.join(SORTER_PATH, f'Sorter_{filename}/wf_folder_curated/')
         
-        # Get sampling rate
         sampling_rate = recording.get_sampling_frequency()
-        # Get probe locations
         probe_locations = recording.get_channel_locations()
-        # Extract templates
         templates = csp.load_and_extract_templates(template_path)
-        #Get unit ids
         with open(os.path.join(SORTER_PATH, f'Sorter_{filename}/wf_folder_curated/sparsity.json'), 'rb') as f:
             unit_id_data = json.load(f)
         unit_ids = unit_id_data['unit_ids']
-        # Analyze conduction speeds
         results = csp.analyze_conduction_speeds(templates, probe_locations, sampling_rate, unit_ids)
         
-        if results is not None and len(results) > 0:  # Check if results exist and not empty
-            # Store recording-specific metadata for later use in visualization
+        if results is not None and len(results) > 0:  
             recording_metadata = {
                 'chip_id': chip_id,
                 'div': div,
@@ -112,22 +100,18 @@ for idx, filename in enumerate(metadata.Filename):
                 'filename': filename
             }
             
-            # Add metadata to each unit's results
             for result in results:
                 result['chip_id'] = chip_id
                 result['div'] = div
                 result['cell_type'] = cell_type
                 result['area'] = area
                 result['filename'] = filename
-                # Makes sure the speed key is consistent
                 if 'speed' in result and 'speed_ms-1' not in result:
                     result['speed_ms-1'] = result.pop('speed')
                 
-                # Add to the combined results list
                 results_combined.append(result)
                 new_results_count += 1
             
-            # Save the metadata separately for this recording
             metadata_dict = {
                 'sampling_rate': sampling_rate,
                 'probe_locations': probe_locations,
@@ -135,7 +119,6 @@ for idx, filename in enumerate(metadata.Filename):
                 'unit_ids': unit_ids
             }
             
-            # Save individual recording metadata
             with open(os.path.join(CONDUCTION_SPEEDS_PATH, f'metadata_{filename}.pkl'), 'wb') as f:
                 pickle.dump(metadata_dict, f)
                 
@@ -150,7 +133,6 @@ for idx, filename in enumerate(metadata.Filename):
 if results_combined is not None and len(results_combined) > 0:
     if new_results_count > 0 or not os.path.exists(pkl_path):
         print(f"Saving combined results with {new_results_count} new entries (total: {len(results_combined)})")
-        # Save the combined data
         with open(pkl_path, 'wb') as f:
             pickle.dump(results_combined, f)
     else:
