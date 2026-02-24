@@ -15,16 +15,14 @@ import logging
 logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
 
 
-#MAIN_PATH = f'/itet-stor/kvulic/neuronies/single_neurons/1_Subprojects/Neurons_As_DNNs/3_Processed_Data/March2025_heart/'
-MAIN_PATH = '/itet-stor/kvulic/neuronies/single_neurons/1_Subprojects/Neurons_As_DNNs/3_Processed_Data/Ferrans_processed_data_heart/'
+MAIN_PATH = '...'
 
-#PROCESSED_DATA_PATH = os.path.join(MAIN_PATH, f'Sorters/')
-PAIRINGS_PATH = os.path.join(MAIN_PATH, f'biTE_new/')
-OUTPUT_PATH = os.path.join(MAIN_PATH,f'Latency_plots/Latency_plots_TE_new')
+
+PAIRINGS_PATH = os.path.join(MAIN_PATH, f'...')
+OUTPUT_PATH = os.path.join(MAIN_PATH,f'...')
 if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
-#SORTER_PATH = PROCESSED_DATA_PATH
 processed=0
 #list all pickle files in pairings path
 pickle_files = glob.glob(os.path.join(PAIRINGS_PATH, '*.pkl'))
@@ -38,7 +36,7 @@ for pickle_file in pickle_files:
     chip_id = int(filename_parts[0].replace('ID', ''))
     div = int(filename_parts[2].replace('DIV', ''))
     area = filename_parts[1]
-    #segment = filename_parts[9]
+
 
     data_te = np.load(pickle_file, allow_pickle=True)
     spikes_extremum = pd.DataFrame(data_te['SPIKEMAT_EXTREMUM'])
@@ -48,8 +46,7 @@ for pickle_file in pickle_files:
     if 'validated_results' in data_te.keys():
         console.info(f'Pairs from {filename} were already validated')
         already_done += 1
-    elif chip_id == 1297 and div == 32:
-    #else:
+    else:
         try:
             
             exp_duration = data_te['EXPERIMENT_DURATION']
@@ -59,10 +56,7 @@ for pickle_file in pickle_files:
             unit_ids = list(data_te['UNIT_TO_EL'].keys())
 
             spikes, electrodes_pre_all, electrodes_post_all, pre_extremum_all, post_extremum_all, unit_pre_all, unit_post_all, lag_all = get_electrode_unit_info_te(data_te, pairings, area, unit_ids)
-            #run_for_all_files_latency_plot(OUTPUT_PATH, filename, data_te,exp_duration,unit_ids,spikes,spikes_extremum, pre_extremum_all, post_extremum_all, unit_pre_all, unit_post_all, lag_all)
-
-            run_for_all_files_latency_calculation_split(pickle_file, data_te, exp_duration, unit_ids, spikes, spikes_extremum, pre_extremum_all, post_extremum_all, unit_pre_all, unit_post_all, lag_all)
-            #run_for_all_files_latency_plot(OUTPUT_PATH, filename, data_te,exp_duration,unit_ids,spikes,spikes_extremum, pre_extremum_all, post_extremum_all, unit_pre_all, unit_post_all, lag_all)
+            run_for_all_files_latency_calculation(pickle_file, data_te, exp_duration, unit_ids, spikes, spikes_extremum, pre_extremum_all, post_extremum_all, unit_pre_all, unit_post_all, lag_all)
 
             console.info(f'Latencies for {filename} were calculated and pairs were filtered')
             processed+=1
