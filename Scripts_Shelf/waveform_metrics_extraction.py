@@ -12,19 +12,13 @@ from src.utils.metadata_functions import load_metadata_as_dataframe
 import logging
 logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
 
-#MAIN_PATH  = '/itet-stor/kvulic/neuronies/single_neurons/1_Subprojects/Neurons_As_DNNs/3_Processed_Data/Pickle_files_1851/'
-
-#RECORDINGS_PATH = '/itet-stor/kvulic/neuronies/single_neurons/1_Subprojects/Neurons_As_DNNs/2_Raw_Data/1851_recordings/'
-#metadata = load_metadata_as_dataframe(file_path=RECORDINGS_PATH)
-
-MAIN_PATH = '/itet-stor/kvulic/neuronies/single_neurons/3_Student_Projects/Amelie/Processed_data/'
-OUTPUT_PATH = '/itet-stor/kvulic/neuronies/single_neurons/3_Student_Projects/Amelie/Processed_data/Results/'
+MAIN_PATH = '...'
+OUTPUT_PATH = '...'
 
 with open(os.path.join(MAIN_PATH, 'Results/extremum_results.pkl'), 'rb') as f:
     data = pd.read_pickle(f)
 a=0
 for filename in data['filename'].unique():
-        # Try to load the waveform extractor with path remapping
         waveform_folder = os.path.join(MAIN_PATH, f'Sorters/Sorter_{filename}/wf_folder_curated')
         output_folder = os.path.join(waveform_folder, 'waveform_metrics_output')
         if os.path.isfile(os.path.join(output_folder, 'waveform_metrics.pkl')):
@@ -39,37 +33,27 @@ for filename in data['filename'].unique():
                 unit_ids = list(map(int, unit_ids))
                 print(f"Successfully loaded WaveformExtractor with {len(unit_ids)} units")
                 
-                # Create output directory
+            
                 output_folder = os.path.join(waveform_folder, 'waveform_metrics_output')
                 os.makedirs(output_folder, exist_ok=True)
 
                 
-                # Now we can use the quality metrics module
                 import spikeinterface.qualitymetrics as sqm
                 
                 # Calculate all available metrics
-                # In v0.100.6, we need to calculate metrics individually
                 all_waveforms = {}
-                
-                # Calculate amplitude, peak-to-trough metrics 
+           
                 for unit_id in unit_ids:
-                    # Get waveforms for this unit
+
                     waveforms = np.load(os.path.join(waveform_folder, f'waveforms/waveforms_{unit_id}.npy'))
                     templates = np.mean(waveforms, axis=0)
                     
-                    #print(waveforms.shape)
-                    # For each unit, calculate metrics manually
+
                     unit_metrics = {}
-                    
-                    # 1. Find best channel
+        
                     peak_channel = np.argmax(np.max(np.abs(templates), axis=0))
-                    
-                    # 2. Get template on best channel
                     waveforms_best_channel = waveforms[:, :, peak_channel]
-                    
-                    #print(waveforms_best_channel.shape)
-                    
-                    # Store unit_id and waveforms_best_channel for each unit
+
                     if 'unit_ids' not in all_waveforms:
                         all_waveforms['unit_ids'] = []
                         all_waveforms['waveforms_best_channel'] = []
