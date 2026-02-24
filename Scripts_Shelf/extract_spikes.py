@@ -6,9 +6,9 @@ from src.utils.metadata_functions import load_metadata_as_dataframe
 from src.cmos_extractor.Extractor_Class_KVedit import ElectrodeActivityExtractor
 import argparse
 
-RECORDINGS_PATH = "/itet-stor/kvulic/neuronies/single_neurons/3_Student_Projects/Amelie/Raw_data/"
-ELECTRODE_SELECTION_PATH = "/itet-stor/kvulic/neuronies/single_neurons/3_Student_Projects/Amelie/Electrode_selections/"
-OUTPUT_PATH = "/itet-stor/kvulic//neuronies/single_neurons/4_Varia/KV_testing/240923_output/"
+RECORDINGS_PATH = "..."
+ELECTRODE_SELECTION_PATH = "..."
+OUTPUT_PATH = ".../"
 
 
 # Load (or create) metadata
