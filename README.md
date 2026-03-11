@@ -1,4 +1,4 @@
-# cmos_toolbox
+# CMOS Toolbox for Neural Data Analysis
 
 
 
